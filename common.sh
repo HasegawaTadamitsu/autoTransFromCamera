@@ -47,7 +47,7 @@ while true
 do
     check_ip
     echo "now " `date`
-    /home/webalbum/.rbenv/shims/ruby trans_file.rb $cp_dist $IP
+    stdbuf -oL -eL /home/webalbum/.rbenv/shims/ruby trans_file.rb $cp_dist $IP
     echo "now " `date`
     echo "sleeping $INTERVAL_GET_FILES_SLEEP_SEC ."
     sleep $INTERVAL_GET_FILES_SLEEP_SEC

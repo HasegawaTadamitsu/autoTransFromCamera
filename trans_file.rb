@@ -111,33 +111,42 @@ rescue  => e
   exit 0
 end
 
-st_file_count =  @files.size
-st_total_size =  @files.inject(0){|sum,hash| sum += hash[:size]}
-puts "#{st_file_count} files. total file size #{format_filesize(st_total_size)}."
+begin
+  st_file_count =  @files.size
+  st_total_size =  @files.inject(0){|sum,hash| sum += hash[:size]}
+  puts "#{st_file_count} files. total file size #{format_filesize(st_total_size)}."
 
-if st_file_count == 0
-  puts "file not found in camera."
-  exit 
+  if st_file_count == 0
+    puts "file not found in camera."
+    exit 
+  end
+  puts "start."
+  
+  start_time = Time.now
+  save_and_delete(write_dir, camera.filesystem)
+  diff_time = (Time.now - start_time).to_f 
+  size_rate = @total_size.to_f   / diff_time
+  count_rate = 999999
+  if @save_count != 0
+    count_rate =   diff_time / @save_count
+  end
+  
+  puts "fin."
+  puts "#{@save_count} files. total file size #{format_filesize(@total_size)}."
+  puts ("complete  %.2f sec. transrate %s /sec. average  %.2f sec/file. " %
+        [diff_time, format_filesize(size_rate), count_rate])
+  
+  if st_file_count != @save_count
+    puts "file count #{st_file_count}. save count #{@save_count}. remaining #{file_count-@save_count} "
+    puts "retry exec program."
+  end
+  
+  
+rescue  => e
+  p e
+  p e.class
+  p e.message
+  p e.backtrace
+  puts "error"
+  exit 1
 end
-puts "start."
-
-start_time = Time.now
-save_and_delete(write_dir, camera.filesystem)
-diff_time = (Time.now - start_time).to_f 
-size_rate = @total_size.to_f   / diff_time
-count_rate = 999999
-if @save_count != 0
-  count_rate =   diff_time / @save_count
-end
-
-puts "fin."
-puts "#{@save_count} files. total file size #{format_filesize(@total_size)}."
-puts ("complete  %.2f sec. transrate %s /sec. average  %.2f sec/file. " %
-      [diff_time, format_filesize(size_rate), count_rate])
-
-if st_file_count != @save_count
-  puts "file count #{st_file_count}. save count #{@save_count}. remaining #{file_count-@save_count} "
-  puts "retry exec program."
-end
-        
-

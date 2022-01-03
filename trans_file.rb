@@ -54,9 +54,13 @@ def check_write_file file_name, camera_file_size
   return 
 end
 
+@save_count=0
+@total_size=0
 def save_and_delete(write_dir,folder)
   files = folder.files
   files.each do |file|
+    return if 100 <= @save_count
+    @total_size += file.info.size
     camera_file_size = file.info.size
     file_name = renew_file_path(write_dir, file.name, camera_file_size)
     puts "saving #{folder.path}/#{file.name} to #{file_name}. #{format_filesize(camera_file_size)} byte"
@@ -67,10 +71,16 @@ def save_and_delete(write_dir,folder)
     puts ("save ok %.2f sec. %s /sec" % [diff_time, format_filesize(rate)])
     check_write_file file_name, camera_file_size
     file.delete
-    puts "delete camera file #{folder.path}/#{file.name} "
+    @save_count += 1
+    puts "delete camera file #{folder.path}/#{file.name} (#{@save_count})"
     file = nil
   end
-  folder.folders.each { |child| save_and_delete(write_dir, child) }
+  files = nil
+  folder.folders.each do  |child|
+    save_and_delete(write_dir, child)
+    child = nil
+  end
+  folder = nil
 end
 
 
@@ -101,23 +111,33 @@ rescue  => e
   exit 0
 end
 
-file_count =  @files.size
-total_size =  @files.inject(0){|sum,hash| sum += hash[:size]}
-puts "#{file_count} files. total file size #{format_filesize(total_size)}."
+st_file_count =  @files.size
+st_total_size =  @files.inject(0){|sum,hash| sum += hash[:size]}
+puts "#{st_file_count} files. total file size #{format_filesize(st_total_size)}."
 
-if file_count == 0
+if st_file_count == 0
   puts "file not found in camera."
   exit 
 end
 puts "start."
 
 start_time = Time.now
-save_and_delete(write_dir,camera.filesystem)
+save_and_delete(write_dir, camera.filesystem)
 diff_time = (Time.now - start_time).to_f 
-size_rate = total_size.to_f   / diff_time
-count_rate =   diff_time / file_count
+size_rate = @total_size.to_f   / diff_time
+count_rate = 999999
+if @save_count != 0
+  count_rate =   diff_time / @save_count
+end
 
 puts "fin."
-puts "#{file_count} files. total file size #{format_filesize(total_size)}."
+puts "#{@save_count} files. total file size #{format_filesize(@total_size)}."
 puts ("complete  %.2f sec. transrate %s /sec. average  %.2f sec/file. " %
       [diff_time, format_filesize(size_rate), count_rate])
+
+if st_file_count != @save_count
+  puts "file count #{st_file_count}. save count #{@save_count}. remaining #{file_count-@save_count} "
+  puts "retry exec program."
+end
+        
+

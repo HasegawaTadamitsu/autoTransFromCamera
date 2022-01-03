@@ -1,6 +1,5 @@
 #!/bin/sh
-cd /home/webalbum/work/gphoto2
-
+cd /home/webalbum/work/autoTransFromCamera
 
 date=`date "+%Y%m%d_%H%M%S"`
 

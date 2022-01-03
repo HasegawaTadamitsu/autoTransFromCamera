@@ -8,16 +8,17 @@ gphoto2 のライブラリを用いて、Wi-fiにつなげたカメラから、
 
 ## 準備するもの
 
-gphoto2 に関するライブラリ類
-ffi-gphoto2
-ruby
+> gphoto2 に関するライブラリ類
+> ffi-gphoto2
+> ruby
 
 
 ## 使い方
 
-> trans_file.rb
-> ruby trans_file.rb 出力先パス IPアドレス カメラ機種名
-> 例　/mnt/picture 192.168.0.160
+
+` trans_file.rb
+ ruby trans_file.rb 出力先パス IPアドレス カメラ機種名
+ 例　/mnt/picture 192.168.0.160`
 
 
 カメラモデルはオプションです。デフォルトはCanon EOS 7D MarkII です。

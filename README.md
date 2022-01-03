@@ -8,9 +8,9 @@ gphoto2 のライブラリを用いて、Wi-fiにつなげたカメラから、
 
 ## 準備するもの
 
-> gphoto2 に関するライブラリ類
-> ffi-gphoto2
-> ruby
+- gphoto2 に関するライブラリ類
+- ffi-gphoto2
+- ruby
 
 
 ## 使い方
